@@ -22,10 +22,10 @@ public class TestRoundRobin extends TestBase {
 			response1.bodyHandler(buff1 -> {
 				assertEquals("Handled by Server1", buff1.toString());
 				client.getNow("/test", response2 -> {
-					response1.bodyHandler(buff2 -> {
+					response2.bodyHandler(buff2 -> {
 						assertEquals("Handled by Server2", buff2.toString());
 						client.getNow("/test", response3 -> {
-							response1.bodyHandler(buff3 -> {
+							response3.bodyHandler(buff3 -> {
 								assertEquals("Handled by Server3", buff3.toString());
 								async.complete();
 							});
