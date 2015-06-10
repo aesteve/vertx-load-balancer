@@ -1,0 +1,60 @@
+buildscript {
+	repositories { jcenter() }
+	dependencies {
+		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.1'
+	}
+}
+ 
+allprojects {
+    apply plugin:'java'
+    apply plugin:'eclipse'
+	apply plugin: 'com.github.johnrengelman.shadow'
+ 
+    repositories {
+        mavenCentral()
+        maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+
+
+allprojects {
+	dependencies {
+		// vertx
+		compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
+
+		// tests
+		testCompile 'io.vertx:vertx-unit:3.0.0-SNAPSHOT'
+		testCompile 'junit:junit:4.12'
+	}
+}
+
+
+configure(rootProject) {
+    apply plugin: 'com.github.johnrengelman.shadow'
+    dependencies {
+        // sub-projects : FIXME : replace by bintray dependencies
+		compile project(':vertx-proxy')
+    }
+    shadowJar  {
+        classifier = ''
+        manifest {
+            attributes 'Main-Class': 'io.vertx.core.Starter'
+            attributes 'Main-Verticle': 'java:io.vertx.examples.loadbalancer.LoadBalancerVerticle'
+        }
+        mergeServiceFiles {
+            include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+        }
+        dependencies {
+            exclude(dependency('io.vertx:codegen'))
+            exclude(dependency('junit:junit'))
+            exclude(dependency('org.mvel:mvel2'))
+        }
+    }
+    task start(dependsOn: shadowJar) << {
+        javaexec { main="-jar"; args shadowJar.archivePath }
+    }
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.4'
+}
