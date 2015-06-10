@@ -27,7 +27,12 @@ public class TestRoundRobin extends TestBase {
 						client.getNow("/test", response3 -> {
 							response3.bodyHandler(buff3 -> {
 								assertEquals("Handled by Server3", buff3.toString());
-								async.complete();
+								client.getNow("/test", response4 -> {
+									response4.bodyHandler(buff4 -> {
+										assertEquals("Handled by Server1", buff4.toString());
+										async.complete();
+									});
+								});
 							});
 						});
 					});
