@@ -16,8 +16,6 @@ public class RoundRobinRouter extends Router {
 
 	@Override
 	protected ProxyHandler chooseProxyFor(HttpServerRequest request) {
-		int i = counter.getAndIncrement();
-		counter.compareAndSet(slaves.size(), 0);
-		return slaves.get(i);
+		return slaves.get(counter.getAndIncrement() % slaves.size());
 	}
 }
