@@ -29,7 +29,7 @@ public class LoadBalancerVerticle extends AbstractVerticle {
 	@Override
 	public void init(Vertx vertx, Context context) {
 		super.init(vertx, context);
-		slaves = new ArrayList<ProxyHandler>();
+		slaves = new ArrayList<>();
 	}
 
 	@Override

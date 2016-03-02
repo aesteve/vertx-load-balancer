@@ -21,11 +21,12 @@ public abstract class Router implements Handler<HttpServerRequest> {
 			router.init(slaves);
 			return router;
 		} catch (InstantiationException | IllegalAccessException e) {
-			log.error("Could not instanciate router for " + policy, e);
+			log.error("Could not instantiate router for " + policy, e);
 			return null;
 		}
 	}
 
+	@Override
 	public void handle(HttpServerRequest request) {
 		chooseProxyFor(request).forward(request);
 	}

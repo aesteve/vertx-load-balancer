@@ -56,8 +56,8 @@ abstract public class TestBase {
 		slaves.add(server3Options);
 		config.put("slaves", slaves);
 		options.setConfig(config);
-		options.setInstances(4);
-		vertx.deployVerticle(LoadBalancerVerticle.class.getName(), options, context.asyncAssertSuccess());
+		//options.setInstances(4);
+		vertx.deployVerticle(new LoadBalancerVerticle(), options, context.asyncAssertSuccess());
 	}
 
 	@Before

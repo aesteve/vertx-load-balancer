@@ -6,13 +6,13 @@ buildscript {
 }
  
 allprojects {
-    apply plugin:'java'
-    apply plugin:'eclipse'
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
 	apply plugin: 'com.github.johnrengelman.shadow'
+	apply plugin: 'application'
  
     repositories {
         mavenCentral()
-        maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
 
@@ -20,14 +20,16 @@ allprojects {
 allprojects {
 	dependencies {
 		// vertx
-		compile 'io.vertx:vertx-core:3.0.0-SNAPSHOT'
+		compile "io.vertx:vertx-core:$vertxVersion"
 
 		// tests
-		testCompile 'io.vertx:vertx-unit:3.0.0-SNAPSHOT'
+		testCompile "io.vertx:vertx-unit:$vertxVersion"
 		testCompile 'junit:junit:4.12'
 	}
 }
 
+mainClassName = 'io.vertx.core.Launcher'
+def mainVerticle = 'io.vertx.examples.loadbalancer.LoadBalancerVerticle'
 
 configure(rootProject) {
     apply plugin: 'com.github.johnrengelman.shadow'
@@ -38,8 +40,8 @@ configure(rootProject) {
     shadowJar  {
         classifier = ''
         manifest {
-            attributes 'Main-Class': 'io.vertx.core.Starter'
-            attributes 'Main-Verticle': 'java:io.vertx.examples.loadbalancer.LoadBalancerVerticle'
+            attributes 'Main-Class': mainClassName
+            attributes 'Main-Verticle': mainVerticle
         }
         mergeServiceFiles {
             include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
@@ -50,11 +52,11 @@ configure(rootProject) {
             exclude(dependency('org.mvel:mvel2'))
         }
     }
-    task start(dependsOn: shadowJar) << {
-        javaexec { main="-jar"; args shadowJar.archivePath }
-    }
+    run {
+		args = ['run', mainVerticle]
+	}
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.4'
+	gradleVersion = '2.11'
 }
